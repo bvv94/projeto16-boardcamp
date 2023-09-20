@@ -1,0 +1,32 @@
+{
+  "name": "projeto16-boardcamp",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Projeto de Aluguel de Jogos de Tabuleiro",
+  "main": "./src/app.js",
+  "scripts": {
+    "start": "node ./src/app.js",
+    "dev": "nodemon ./src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bvv94/projeto16-boardcamp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bvv94/projeto16-boardcamp/issues"
+  },
+  "homepage": "https://github.com/bvv94/projeto16-boardcamp#readme",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "joi": "^17.10.2",
+    "pg": "^8.11.3"
+  }
+}
