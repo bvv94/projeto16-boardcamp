@@ -2,7 +2,7 @@ import { db } from "../database/database.connection.js"
 
 export async function getCustomers(req, res) {
     try {
-        const customers = await db.query(`SELECT * FROM customers;`)
+        const customers = await db.query(`SELECT id, name, phone, cpf, to_char(birthday, 'YYYY-MM-DD') AS birthday FROM customers;`)
         res.send(customers.rows)
 
     } catch (err) {
@@ -14,7 +14,7 @@ export async function getIdCustomer(req, res) {
     const { id } = req.params;
 
     try {
-        const customer = await db.query(`SELECT id, name, phone, cpf, birthday
+        const customer = await db.query(`SELECT id, name, phone, cpf, to_char(birthday, 'YYYY-MM-DD') AS birthday
                         FROM customers WHERE id=$1;`, [id]);
         if (customer.rowCount === 0) return res.sendStatus(404);
 
@@ -45,9 +45,10 @@ export async function updateCustomer(req, res) {
 
     try {
         const doubled = await db.query(`SELECT * FROM customers WHERE cpf=$1 AND id<>$2;`, [cpf, id]);
-        if (doubled.rows !== 0) return res.status(409).send("CPF pertence a outro usuário");
+        if (doubled.rows !== 1) return res.status(409).send("CPF pertence a outro usuário");
 
-        await db.query(`UPDATE customers SET (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4) WHERE id=$5;`, [name, phone, cpf, birthday, id]);
+        await db.query(`UPDATE customers SET (name, phone, cpf, birthday) 
+                        VALUES ($1, $2, $3, $4) WHERE id=$5;`, [name, phone, cpf, birthday, id]);
         res.sendStatus(201);
     }
     catch (err) {
