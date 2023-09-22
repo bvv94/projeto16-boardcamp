@@ -28,7 +28,7 @@ export async function getIdCustomer(req, res) {
                         FROM customers WHERE id=$1;`, [id]);
         if (customer.rowCount === 0) return res.sendStatus(404);
 
-        const formattedCustomers = customers.rows.map(customer => ({
+        const formattedCustomers = customer.rows.map(customer => ({
             id: customer.id,
             name: customer.name,
             phone: customer.phone,
