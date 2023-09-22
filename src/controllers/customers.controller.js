@@ -27,33 +27,30 @@ export async function getIdCustomer(req, res) {
 }
 
 export async function createCustomer(req, res) {
-    const { name, phone, cpf, birthday } = req.body;
+    const { name, phone, cpf, birthday } = res.locals.customer;
 
     try {
-        const exist = await db.query(`SELECT * FROM customers WHERE cpf=$1;`, [cpf]);
-        if (exist.rowCount !== 0) return res.status(409).send("CPF já cadastrado");
-
         await db.query(`INSERT INTO customers (name, phone, cpf, birthday)
         VALUES ($1, $2, $3, $4);`, [name, phone, cpf, birthday]);
         res.sendStatus(201);
     }
-    catch(err){
+    catch (err) {
         res.send(err.message);
     }
 }
 
 export async function updateCustomer(req, res) {
-    const {id} = req.params;
+    const { id } = req.params;
     const { name, phone, cpf, birthday } = req.body;
 
-    try{
+    try {
         const doubled = await db.query(`SELECT * FROM customers WHERE cpf=$1 AND id<>$2;`, [cpf, id]);
-        if (doubled.rows !==0) return res.status(409).send("CPF pertence a outro usuário");
+        if (doubled.rows !== 0) return res.status(409).send("CPF pertence a outro usuário");
 
         await db.query(`UPDATE customers SET (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4) WHERE id=$5;`, [name, phone, cpf, birthday, id]);
         res.sendStatus(201);
     }
-    catch(err){
+    catch (err) {
         res.send(err.message);
     }
 }
