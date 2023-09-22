@@ -1,9 +1,19 @@
 import { db } from "../database/database.connection.js"
+import moment from "moment";
 
 export async function getCustomers(req, res) {
     try {
-        const customers = await db.query(`SELECT id, name, phone, cpf, to_char(birthday, 'YYYY-MM-DD') AS birthday FROM customers;`)
-        res.send(customers.rows)
+        const customers = await db.query(`SELECT id, name, phone, cpf, birthday FROM customers;`)
+
+        const formattedCustomers = customers.rows.map(customer => ({
+            id: customer.id,
+            name: customer.name,
+            phone: customer.phone,
+            cpf: customer.cpf,
+            birthday: moment(customer.birthday).format('YYYY-MM-DD')
+        }));
+
+        res.send(formattedCustomers)
 
     } catch (err) {
         res.send(err.message)
@@ -14,11 +24,19 @@ export async function getIdCustomer(req, res) {
     const { id } = req.params;
 
     try {
-        const customer = await db.query(`SELECT id, name, phone, cpf, to_char(birthday, 'YYYY-MM-DD') AS birthday
+        const customer = await db.query(`SELECT id, name, phone, cpf, birthday
                         FROM customers WHERE id=$1;`, [id]);
         if (customer.rowCount === 0) return res.sendStatus(404);
 
-        res.send(customer.rows[0]);
+        const formattedCustomers = customers.rows.map(customer => ({
+            id: customer.id,
+            name: customer.name,
+            phone: customer.phone,
+            cpf: customer.cpf,
+            birthday: moment(customer.birthday).format('YYYY-MM-DD')
+        }));
+
+        res.send(formattedCustomers)
     }
     catch (err) {
         res.send(err.message)
