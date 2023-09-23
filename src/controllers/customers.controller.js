@@ -36,7 +36,6 @@ export async function getIdCustomer(req, res) {
             birthday: moment(customer.rows[0].birthday).format('YYYY-MM-DD')
         };
 
-        // res.send(customer)
         res.send(formattedCustomer)
     }
     catch (err) {
@@ -60,7 +59,7 @@ export async function createCustomer(req, res) {
 
 export async function updateCustomer(req, res) {
     const { id } = req.params;
-    const { name, phone, cpf, birthday } = req.body;
+    const { name, phone, cpf, birthday } = res.locals.customer;
 
     try {
         const doubled = await db.query(`SELECT * FROM customers WHERE cpf=$1 AND id<>$2;`, [cpf, id]);
@@ -68,7 +67,7 @@ export async function updateCustomer(req, res) {
 
         await db.query(`UPDATE customers SET (name, phone, cpf, birthday) 
                         VALUES ($1, $2, $3, $4) WHERE id=$5;`, [name, phone, cpf, birthday, id]);
-        res.sendStatus(201);
+        res.sendStatus(200);
     }
     catch (err) {
         res.send(err.message);
