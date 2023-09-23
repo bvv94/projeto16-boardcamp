@@ -27,16 +27,17 @@ export async function getIdCustomer(req, res) {
         const customer = await db.query(`SELECT id, name, phone, cpf, birthday
                         FROM customers WHERE id=$1;`, [id]);
         if (customer.rowCount === 0) return res.sendStatus(404);
+        
+        const formattedCustomer = {
+            id: customer.rows[0].id,
+            name: customer.rows[0].name,
+            phone: customer.rows[0].phone,
+            cpf: customer.rows[0].cpf,
+            birthday: moment(customer.rows[0].birthday).format('YYYY-MM-DD')
+        };
 
-        const formattedCustomers = customer.rows.map(customer => ({
-            id: customer.id,
-            name: customer.name,
-            phone: customer.phone,
-            cpf: customer.cpf,
-            birthday: moment(customer.birthday).format('YYYY-MM-DD')
-        }));
-
-        res.send(formattedCustomers)
+        // res.send(customer)
+        res.send(formattedCustomer)
     }
     catch (err) {
         res.send(err.message)
