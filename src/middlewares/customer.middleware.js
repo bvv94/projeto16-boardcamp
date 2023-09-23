@@ -20,7 +20,7 @@ export async function validateUpdate(req, res, next) {
     try {
         const existingCustomer = await db.query(`SELECT * FROM customers WHERE cpf=$1;`, [customer.cpf]);
 
-        if (existingCustomer.rowCount > 0 && existingCustomer.rows[0].id !== id) {
+        if (existingCustomer.rows[0].id !== id) {
             return res.status(409).send("CPF já cadastrado");
         }
 
