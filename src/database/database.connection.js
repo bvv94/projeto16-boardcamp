@@ -9,6 +9,6 @@ const configDatabase = {
     connectionString: process.env.DATABASE_URL
 }
 
-// if (process.env.NODE_ENV === "production") configDatabase.ssl = true; /* essa linha não está n aaula de hj 20/09*/
+if (process.env.NODE_ENV === "production") configDatabase.ssl = true;
 
 export const db = new Pool(configDatabase)
