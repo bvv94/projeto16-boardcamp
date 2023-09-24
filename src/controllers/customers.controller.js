@@ -58,16 +58,15 @@ export async function createCustomer(req, res) {
 }
 
 export async function updateCustomer(req, res) {
-    const { id } = req.params;
-    const { name, phone, cpf, birthday } = res.locals.customer;
+    const { name, phone, cpf, birthday, id } = res.locals.customer;
 
     try {
-        const doubled = await db.query(`SELECT * FROM customers WHERE cpf=$1 AND id<>$2;`, [cpf, id]);
-        if (doubled.rows !== 1) return res.status(409).send("CPF pertence a outro usuário");
-
-        await db.query(`UPDATE customers SET (name, phone, cpf, birthday) 
-                        VALUES ($1, $2, $3, $4) WHERE id=$5;`, [name, phone, cpf, birthday, id]);
-        res.sendStatus(200);
+        await db.query(`
+            UPDATE customers 
+                SET name=$1, phone=$2, birthday=$3, cpf=$4
+                WHERE id=$5;
+        `, [name, phone, birthday, cpf, id])
+        res.sendStatus(200)
     }
     catch (err) {
         res.send(err.message);
