@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { db } from "../database/database.connection.js"
 
 export async function validateNewRental(req, res, next) {
@@ -23,10 +24,20 @@ export async function validateReturn(req, res, next) {
     const { id } = req.params;
 
     const exist = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
-    if(exist.rows.length === 0) return res.status(404).send("Rental Id não existe")
-    if(exist.rows[0].returnDate === 'NULL') return res.status(400).send("Aluguel já finalizado anteriormente");
 
-    res.locals.id_return = id;
+    if(exist.rows.length === 0) return res.status(404).send("Rental Id não existe")
+    if(exist.rows[0].returnDate !== 'NULL') return res.status(400).send("Aluguel já finalizado anteriormente");
+
+    const newReturnDate = dayjs.format(`AAAA-MM-DD`);
+    const delay = dayjs(rental.rows[0].rentDate, `day`).add(rental.rows[0].daysRented, `day`);
+
+    const diffence = dayjs().diff(delay, `day`);
+
+    if (diffence > 0){
+        let delayFee = diffence*(rental.rows[0].originalPrice / rental.rows[0].daysRented);
+    }
+
+    res.locals.id_return = {id, newReturnDate, delayFee};
 
     next();
 }
