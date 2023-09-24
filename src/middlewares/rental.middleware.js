@@ -23,10 +23,11 @@ export async function validateNewRental(req, res, next) {
 export async function validateReturn(req, res, next) {
     const { id } = req.params;
 
-    const exist = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
+    const exist = await db.query(`SELECT * FROM rentals WHERE id=$1;`, [id]);
+    console.log(exist);
 
-    if(exist.rowCount === 0) return res.status(404).send("Rental Id não existe")
-    if(exist.rows[0].returnDate !== null) return res.status(400).send("Aluguel já finalizado anteriormente");
+    if (exist.rowCount === 0) return res.status(404).send("Rental Id não existe")
+    if (exist.rows[0].returnDate !== null) return res.status(400).send("Aluguel já finalizado anteriormente");
 
     const date = new Date();
     const rental = exist.rows[0];
@@ -37,11 +38,23 @@ export async function validateReturn(req, res, next) {
 
     let delayFee = 0;
 
-    if (diffence > 0){
-        delayFee = diffence*(rental.originalPrice / rental.daysRented);
+    if (diffence > 0) {
+        delayFee = diffence * (rental.originalPrice / rental.daysRented);
     }
 
-    res.locals.id_return = {id, newReturnDate:returnDate, delayFee};
+    res.locals.id_return = { id, newReturnDate: returnDate, delayFee };
 
     next();
+}
+
+export async function validateDelete(req, res, next) {
+    const { id } = req.params;
+
+    const rental = await db.query(`SELECT * FROM rentals WHERE id=$1`, [id]);
+    if (rental.rowCount === 0) return res.sendStatus(404);
+    if (rental.rows[0].returnDate === null) return res.status(400).send("Aluguel ainda não finalizado");
+
+    res.locals.delete = { id };
+
+    next()
 }
