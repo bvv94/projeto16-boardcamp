@@ -22,7 +22,7 @@ export async function validateUpdate(req, res, next) {
 
         if (existingCustomer.rowCount !== 0) return res.status(409).send("CPF já cadastrado");
 
-        res.locals.customer = customer, id;
+        res.locals.customer = {...customer, id};
         
         next();
     } catch (error) {
